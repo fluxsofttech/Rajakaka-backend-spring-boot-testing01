@@ -1,18 +1,23 @@
-# Use the official OpenJDK 17 image as a base
+# ---------- Stage 1: Build the JAR ----------
 FROM maven:3.8.4-openjdk-17 AS build
-
-# Set the working directory inside the container
 WORKDIR /app
 
-# Add a volume to store logs
-VOLUME /tmp
+# Copy Maven files first for better caching
+COPY pom.xml .
+COPY src ./src
 
-# Copy the JAR file to the container
-ARG JAR_FILE=target/*.jar
-COPY ${JAR_FILE} app.jar
+# Build the Spring Boot JAR (skip tests for faster build)
+RUN mvn clean package -DskipTests
 
-# Expose port 8080 (or your configured port)
+# ---------- Stage 2: Run the App ----------
+FROM openjdk:17-jdk-slim
+WORKDIR /app
+
+# Copy only the built JAR from the previous stage
+COPY --from=build /app/target/*.jar app.jar
+
+# Expose Spring Boot default port
 EXPOSE 8080
 
-# Run the Spring Boot app
+# Run the Spring Boot application
 ENTRYPOINT ["java", "-jar", "app.jar"]
