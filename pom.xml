@@ -134,6 +134,13 @@
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
         </dependency>
+        <!-- ✅ In-Memory H2 Database (for Render testing) -->
+<dependency>
+    <groupId>com.h2database</groupId>
+    <artifactId>h2</artifactId>
+    <scope>runtime</scope>
+</dependency>
+
 
         <!-- OpenAI Java SDK -->
         <dependency>
